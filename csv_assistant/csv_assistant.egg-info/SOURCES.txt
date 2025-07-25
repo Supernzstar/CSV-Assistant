@@ -1,0 +1,8 @@
+README.md
+setup.py
+csv_assistant.egg-info/PKG-INFO
+csv_assistant.egg-info/SOURCES.txt
+csv_assistant.egg-info/dependency_links.txt
+csv_assistant.egg-info/entry_points.txt
+csv_assistant.egg-info/requires.txt
+csv_assistant.egg-info/top_level.txt

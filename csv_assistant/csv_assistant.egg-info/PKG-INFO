@@ -1,0 +1,85 @@
+Metadata-Version: 2.4
+Name: csv-assistant
+Version: 0.1.0
+Summary: A ChatGPT-powered CSV data analysis assistant
+Author: Yunfeng Liu
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: fastapi>=0.110.0
+Requires-Dist: uvicorn[standard]>=0.27.0
+Requires-Dist: openai>=1.2.0
+Requires-Dist: pandas>=2.0.0
+Requires-Dist: matplotlib>=3.5.0
+Requires-Dist: seaborn>=0.12.0
+Dynamic: author
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# 大模型 CSV 数据分析系统
+
+本项目实现了一个交互式命令行工具，借鉴 OpenAI **Code Interpreter** 思想，利用大模型 (GPT-4 系) 自动编写并执行 Python 代码，对 CSV 数据进行分析。
+
+## 目录结构
+
+```
+.
+├── assistant.py        # 主程序
+├── requirements.txt    # 依赖列表
+└── Microsoft/
+    ├── 大模型实习项目测试.csv   # 示例数据
+    └── 大模型实习生测试项目.pdf # 任务说明
+```
+
+## 安装依赖
+
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+依赖包括 `openai`, `pandas`, `matplotlib`, `seaborn`，均已在 `requirements.txt` 中列出。
+
+## 环境变量
+
+在运行前请将 **有效** OpenAI API Key 写入环境变量（注意不要复制到期或已失效的 key）：
+
+```bash
+export OPENAI_API_KEY="sk-..."
+```
+
+（可选）如需指定模型，设置 `OPENAI_MODEL`，默认 `gpt-4o-mini`。
+
+## 运行方式
+
+```bash
+python assistant.py Microsoft/大模型实习项目测试.csv
+```
+
+随后即可在命令行中输入自然语言数据分析问题，例如：
+
+1. 分析 Clothing 随时间变化的总销售额趋势。
+2. 对 Bikes 做同样分析。
+3. 哪些年份 Components 比 Accessories 的总销售额高？
+
+系统流程：
+
+1. LLM 生成 Python 代码 → 2. 自动执行 → 3. 若报错则迭代纠错 → 4. 结果回显 → 5. LLM 解释结果
+5. **数据预清洗**：脚本在加载 CSV 时会自动去除 `Sales`、`Rating` 列中的 `$`、`,`、`%` 等符号并转成数值，避免模型频繁编写清洗代码。
+
+## 录屏要求
+
+- 需录制 3 个关联问题的完整交互。
+- 录屏中应能看到：用户问题、生成的代码、输出结果、LLM 解释。
+
+## 设计说明
+
+1. **上下文记忆**：脚本会保存过往提问、代码、输出与解释，使后续问题能够基于历史。
+2. **安全沙盒**：代码执行在 `exec` 的专用作用域中，只暴露 `df/pd`，避免对系统造成影响。
+3. **自动纠错**：捕获异常，将报错栈信息追加到 prompt 重新请求模型，最多重试 3 次。
+4. **图表支持**：若模型生成绘图代码，可保存为 `output.png` 并直接查看。
+
+如有问题，欢迎反馈。 
